@@ -1,0 +1,6 @@
+apiVersion: v2
+name: bench
+description: Helm chart for Arca Bench - Test & Evaluation Laboratory
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

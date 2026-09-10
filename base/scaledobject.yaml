@@ -1,0 +1,18 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: bench
+  namespace: bench
+spec:
+  scaleTargetRef:
+    name: bench
+  minReplicaCount: 0
+  maxReplicaCount: 10
+  cooldownPeriod: 300
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka.platform.svc.cluster.local:9092
+        consumerGroup: bench-workers
+        topic: bench.run.completed
+        lagThreshold: "100"
