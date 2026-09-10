@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: bench-deny-all
+  name: arca-bench-bench-deny-all
   namespace: bench
 spec:
   podSelector: {}
@@ -11,12 +11,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: bench-allow-ingress
+  name: arca-bench-bench-allow-ingress
   namespace: bench
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: bench
+      app.kubernetes.io/name: arca-bench-bench
   policyTypes: ["Ingress"]
   ingress:
     - from:
@@ -30,18 +30,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: bench-allow-egress
+  name: arca-bench-bench-allow-egress
   namespace: bench
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: bench
+      app.kubernetes.io/name: arca-bench-bench
   policyTypes: ["Egress"]
   egress:
     - to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: platform
+              kubernetes.io/metadata.name: arca-bench-platform
       ports:
         - port: 9092
           protocol: TCP
