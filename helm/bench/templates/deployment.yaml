@@ -1,40 +1,41 @@
+{{- if .Values.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bench
-  namespace: bench
+  name: {{ include "bench.fullname" . }}
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   labels:
-    app.kubernetes.io/name: bench
-    app.kubernetes.io/part-of: arca-suite
+    {{- include "bench.labels" . | nindent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: bench
+      {{- include "bench.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: bench
+        {{- include "bench.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/part-of: arca-suite
     spec:
-      serviceAccountName: bench
+      serviceAccountName: {{ include "bench.serviceAccountName" . }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001
         fsGroup: 10001
       containers:
-        - name: bench
-          image: registry.arca.local/arca-bench:0.1.0
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8092
+            - containerPort: {{ .Values.service.targetPort }}
           envFrom:
             - configMapRef:
-                name: bench-config
+                name: {{ include "bench.fullname" . }}-config
           env:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: bench-secrets
+                  name: {{ include "bench.fullname" . }}-secrets
                   key: DATABASE_URL
           securityContext:
             allowPrivilegeEscalation: false
@@ -48,18 +49,14 @@ spec:
           readinessProbe:
             httpGet:
               path: /readyz
-              port: 8092
+              port: {{ .Values.service.targetPort }}
             periodSeconds: 10
           startupProbe:
             httpGet:
               path: /healthz
-              port: 8092
+              port: {{ .Values.service.targetPort }}
             failureThreshold: 30
             periodSeconds: 2
           resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: "1"
-              memory: 512Mi
+            {{- toYaml .Values.resources | nindent 12 }}
+{{- end -}}

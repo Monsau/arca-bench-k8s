@@ -1,15 +1,18 @@
+{{- if .Values.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: bench
-  namespace: bench
+  name: {{ include "bench.fullname" . }}
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   labels:
-    app.kubernetes.io/part-of: arca-suite
+    {{- include "bench.labels" . | nindent 4 }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.type }}
   selector:
-    app.kubernetes.io/name: bench
+    {{- include "bench.selectorLabels" . | nindent 4 }}
   ports:
     - name: http
-      port: 80
-      targetPort: 8092
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+{{- end -}}
