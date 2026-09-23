@@ -24,7 +24,7 @@ spec:
         fsGroup: 10001
       containers:
         - name: bench
-          image: server01:5000/arca-suite/arca-bench:0.1.2
+          image: server01:5000/arca-suite/arca-bench:0.1.3
           ports:
             - containerPort: 8092
           envFrom:
